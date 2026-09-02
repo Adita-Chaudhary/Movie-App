@@ -1,30 +1,32 @@
 import "./css/App.css";
-import Home from "./pages/Home"
-import MovieCard from "./components/MovieCard";
 import { Routes, Route } from 'react-router-dom';
-import Favorites from "./pages/Favorites";
-import { MovieProvider } from "./contexts/MovieContext";
 import Navbar from "./components/NavBar";
+import ScrollToTop from "./components/ScrollToTop";
+import { AppProviders } from "./contexts/AppProviders";
+import Home from "./pages/Home";
+import Search from "./pages/Search";
+import MovieDetails from "./pages/MovieDetails";
+import Watchlist from "./pages/Watchlist";
+import Activity from "./pages/Activity";
+import NotFound from "./pages/NotFound";
 
-function App(){
+function App() {
   return (
-    <MovieProvider>
+    <AppProviders>
+      <ScrollToTop />
       <Navbar />
-    <main className="main-content">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/favorites" element={<Favorites />} />
-      </Routes>
-    </main>
-    </MovieProvider>
-  
-
-
- 
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/movie/:id" element={<MovieDetails />} />
+          <Route path="/watchlist" element={<Watchlist />} />
+          <Route path="/activity" element={<Activity />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+    </AppProviders>
   );
-  
-  
 }
-
 
 export default App;

@@ -1,74 +1,95 @@
-
-import MovieCard from "../components/MovieCard";
-import { useState, useEffect } from "react";
-import { searchMovies, getPopularMovies } from "../services/api";
-import "../css/Home.css";
+import { useMemo } from 'react';
+import MovieRow from '../components/MovieRow';
+import { useMovieList } from '../hooks/useMovieList';
+import { useRecommendations } from '../hooks/useRecommendations';
+import { useWatchlist } from '../contexts/WatchlistContext';
+import { useHistory } from '../contexts/HistoryContext';
+import {
+  getTrendingMovies,
+  getPopularMovies,
+  getTopRatedMovies,
+  getUpcomingMovies,
+} from '../services/movieApi';
+import '../css/Home.css';
 
 function Home() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [movies, setMovies] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const trending = useMovieList(getTrendingMovies, []);
+  const popular = useMovieList(getPopularMovies, []);
+  const topRated = useMovieList(getTopRatedMovies, []);
+  const upcoming = useMovieList(getUpcomingMovies, []);
 
-  useEffect(() => {
-    const loadPopularMovies = async () => {
-      try {
-        const popularMovies = await getPopularMovies();
-        setMovies(popularMovies);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to load movies...");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { watchlist } = useWatchlist();
+  const { history } = useHistory();
 
-    loadPopularMovies();
-  }, []);
+  // Recommendations are scored against movies we've already fetched for
+  // the other rows - no extra network requests (see useRecommendations.js).
+  const candidatePool = useMemo(() => {
+    const combined = [...trending.movies, ...popular.movies, ...topRated.movies, ...upcoming.movies];
+    const seen = new Set();
+    return combined.filter((movie) => {
+      if (seen.has(movie.id)) return false;
+      seen.add(movie.id);
+      return true;
+    });
+  }, [trending.movies, popular.movies, topRated.movies, upcoming.movies]);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return
-    if (loading) return
-
-    setLoading(true)
-    try {
-        const searchResults = await searchMovies(searchQuery)
-        setMovies(searchResults)
-        setError(null)
-    } catch (err) {
-        console.log(err)
-        setError("Failed to search movies...")
-    } finally {
-        setLoading(false)
-    }
-  };
+  const { recommendations, hasEnoughSignal } = useRecommendations(candidatePool);
 
   return (
     <div className="home">
-      <form onSubmit={handleSearch} className="search-form">
-        <input
-          type="text"
-          placeholder="Search for movies..."
-          className="search-input"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+      <div className="home-hero">
+        <h1>Discover your next favorite movie</h1>
+        <p>Trending picks, personal ratings, and recommendations based on what you actually watch.</p>
+      </div>
+
+      {hasEnoughSignal && recommendations.length > 0 && (
+        <MovieRow
+          title="Recommended for You"
+          subtitle="Based on your watchlist, ratings and viewing history"
+          movies={recommendations.map((r) => r.movie)}
+          isLoading={false}
+          isError={false}
         />
-        <button type="submit" className="search-button">
-          Search
-        </button>
-      </form>
+      )}
 
-        {error && <div className="error-message">{error}</div>}
+      {watchlist.length > 0 && (
+        <MovieRow title="From Your Watchlist" movies={watchlist.slice(0, 12)} isLoading={false} isError={false} />
+      )}
 
-      {loading ? (
-        <div className="loading">Loading...</div>
-      ) : (
-        <div className="movies-grid">
-          {movies.map((movie) => (
-            <MovieCard movie={movie} key={movie.id} />
-          ))}
-        </div>
+      <MovieRow
+        title="Trending This Week"
+        movies={trending.movies}
+        isLoading={trending.isLoading}
+        isError={trending.isError}
+        errorMessage={trending.error}
+      />
+
+      <MovieRow
+        title="Popular"
+        movies={popular.movies}
+        isLoading={popular.isLoading}
+        isError={popular.isError}
+        errorMessage={popular.error}
+      />
+
+      <MovieRow
+        title="Top Rated"
+        movies={topRated.movies}
+        isLoading={topRated.isLoading}
+        isError={topRated.isError}
+        errorMessage={topRated.error}
+      />
+
+      <MovieRow
+        title="Upcoming"
+        movies={upcoming.movies}
+        isLoading={upcoming.isLoading}
+        isError={upcoming.isError}
+        errorMessage={upcoming.error}
+      />
+
+      {history.length > 0 && (
+        <MovieRow title="Recently Viewed" movies={history.slice(0, 12)} isLoading={false} isError={false} />
       )}
     </div>
   );

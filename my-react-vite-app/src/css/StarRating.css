@@ -1,0 +1,44 @@
+.star-rating {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+
+.star {
+  color: var(--color-border);
+  font-size: 1rem;
+}
+
+.star--filled {
+  color: var(--color-star);
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  padding: 0.1rem;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--color-border);
+  cursor: pointer;
+  transition: transform 0.1s, color 0.15s;
+}
+
+.star-btn:hover,
+.star-btn:focus-visible {
+  transform: scale(1.15);
+  outline-offset: 1px;
+}
+
+.star-btn.star--filled {
+  color: var(--color-star);
+}
+
+.star-rating--sm .star-btn,
+.star-rating--sm .star {
+  font-size: 0.85rem;
+}
+
+.star-rating--lg .star-btn,
+.star-rating--lg .star {
+  font-size: 1.8rem;
+}

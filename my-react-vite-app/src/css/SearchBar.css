@@ -1,0 +1,26 @@
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.55rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  min-width: 0;
+}
+
+.search-button {
+  padding: 0.55rem 1.1rem;
+  background-color: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.search-button:hover {
+  background-color: var(--color-accent-hover);
+}

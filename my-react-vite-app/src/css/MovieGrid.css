@@ -1,0 +1,13 @@
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.5rem;
+  padding: 0.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.grid-sentinel {
+  width: 100%;
+  min-height: 1px;
+}

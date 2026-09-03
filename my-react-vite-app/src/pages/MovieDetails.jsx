@@ -14,7 +14,6 @@ import { tmdbImage } from '../services/tmdbClient';
 import { toMovieSummary } from '../utils/movieSummary';
 import { rankSimilarMovies } from '../utils/recommendations';
 import { formatDate, formatRuntime, formatRating } from '../utils/format';
-import '../css/MovieDetails.css';
 
 function MovieDetails() {
   const { id } = useParams();
@@ -52,41 +51,47 @@ function MovieDetails() {
   const posterUrl = tmdbImage(movie.poster_path, 'w500');
 
   return (
-    <div className="movie-details">
+    <div className="relative pb-8">
       <div
-        className="movie-details-backdrop"
+        className="absolute inset-x-0 top-0 -z-10 h-[260px] bg-cover bg-top [animation:fadeIn_0.6s_ease_both] sm:h-[420px]"
         style={backdropUrl ? { backgroundImage: `url(${backdropUrl})` } : undefined}
       >
-        <div className="movie-details-backdrop-scrim" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-canvas" />
       </div>
 
-      <div className="movie-details-content">
-        <div className="movie-details-poster">
+      <div className="mx-auto flex max-w-[1200px] flex-col gap-6 px-5 pb-4 pt-8 sm:gap-8 md:flex-row md:px-8 md:pt-12">
+        <div className="flex-none [animation:scaleIn_0.5s_cubic-bezier(0.22,1,0.36,1)_both] md:w-[260px]">
           {posterUrl ? (
-            <img src={posterUrl} alt={movie.title} />
+            <img src={posterUrl} alt={movie.title} className="block w-40 rounded-[10px] shadow-panel sm:w-56 md:w-full" />
           ) : (
-            <div className="movie-details-poster-placeholder" aria-hidden="true">
+            <div
+              className="flex aspect-[2/3] w-40 items-center justify-center rounded-[10px] bg-panel-raised text-5xl sm:w-56 md:w-full"
+              aria-hidden="true"
+            >
               🎬
             </div>
           )}
         </div>
 
-        <div className="movie-details-info">
-          <h1>{movie.title}</h1>
-          {movie.tagline && <p className="movie-details-tagline">&ldquo;{movie.tagline}&rdquo;</p>}
+        <div className="min-w-0 flex-1 [animation:fadeInUp_0.5s_cubic-bezier(0.22,1,0.36,1)_0.1s_both]">
+          <h1 className="mb-2 text-[clamp(1.6rem,4vw,2.4rem)] font-bold">{movie.title}</h1>
+          {movie.tagline && <p className="mb-3 italic text-ink-muted">&ldquo;{movie.tagline}&rdquo;</p>}
 
-          <div className="movie-details-meta">
+          <div className="mb-4 flex flex-wrap gap-2 text-ink-muted">
             <span>{formatDate(movie.release_date)}</span>
             <span>·</span>
             <span>{formatRuntime(movie.runtime)}</span>
             <span>·</span>
-            <span className="movie-details-rating">★ {formatRating(movie.vote_average)}</span>
+            <span className="font-semibold text-gold">★ {formatRating(movie.vote_average)}</span>
           </div>
 
           {movie.genres?.length > 0 && (
-            <div className="movie-details-genres">
+            <div className="mb-4 flex flex-wrap gap-2">
               {movie.genres.map((genre) => (
-                <span key={genre.id} className="genre-chip">
+                <span
+                  key={genre.id}
+                  className="rounded-full bg-panel-raised px-3 py-1 text-sm transition-transform duration-150 hover:-translate-y-px"
+                >
                   {genre.name}
                 </span>
               ))}
@@ -95,24 +100,31 @@ function MovieDetails() {
 
           <button
             type="button"
-            className={`watchlist-toggle ${inWatchlist ? 'active' : ''}`}
             onClick={() => toggleWatchlist(toMovieSummary(movie))}
+            className={`mb-5 font-semibold transition-[background-color,border-color] duration-200 ${
+              inWatchlist
+                ? 'animate-[pop_0.35s_cubic-bezier(0.34,1.56,0.64,1)] border-good bg-good text-white'
+                : 'border-brand bg-brand text-white hover:bg-brand-hover'
+            }`}
           >
             {inWatchlist ? '✓ In Watchlist' : '+ Add to Watchlist'}
           </button>
 
-          <p className="movie-details-overview">{movie.overview || 'No overview available.'}</p>
+          <p className="mb-4 leading-relaxed">{movie.overview || 'No overview available.'}</p>
 
           {director && (
-            <p className="movie-details-director">
-              <strong>Director:</strong> <Link to={`/person/${director.id}`}>{director.name}</Link>
+            <p className="mb-4">
+              <strong>Director:</strong>{' '}
+              <Link to={`/person/${director.id}`} className="font-semibold text-brand hover:text-brand-hover">
+                {director.name}
+              </Link>
             </p>
           )}
 
           {keywords.length > 0 && (
-            <div className="movie-details-keywords">
+            <div className="flex flex-wrap gap-1.5">
               {keywords.map((keyword) => (
-                <span key={keyword.id} className="keyword-chip">
+                <span key={keyword.id} className="rounded-full bg-panel px-2.5 py-1 text-xs text-ink-muted">
                   {keyword.name}
                 </span>
               ))}
@@ -124,30 +136,42 @@ function MovieDetails() {
       <WhereToWatch movieId={movie.id} />
 
       {cast.length > 0 && (
-        <section className="cast-section">
-          <h2>Cast</h2>
-          <div className="cast-scroller stagger">
+        <section className="mx-auto mb-8 max-w-[1200px] px-5 md:px-8">
+          <h2 className="mb-4 text-xl font-bold">Cast</h2>
+          <div className="stagger flex gap-4 overflow-x-auto pb-2 [scroll-behavior:smooth]">
             {cast.map((person) => (
-              <Link key={person.cast_id ?? person.id} to={`/person/${person.id}`} className="cast-card fade-in">
+              <Link
+                key={person.cast_id ?? person.id}
+                to={`/person/${person.id}`}
+                className="fade-in group block w-[110px] flex-none overflow-hidden rounded-lg text-center text-inherit transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 focus-visible:-translate-y-1"
+              >
                 {tmdbImage(person.profile_path, 'w185') ? (
-                  <img src={tmdbImage(person.profile_path, 'w185')} alt={person.name} loading="lazy" />
+                  <img
+                    src={tmdbImage(person.profile_path, 'w185')}
+                    alt={person.name}
+                    loading="lazy"
+                    className="mb-1.5 aspect-[2/3] w-full rounded-lg object-cover transition-transform duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06] group-focus-visible:scale-[1.06]"
+                  />
                 ) : (
-                  <div className="cast-card-placeholder" aria-hidden="true">
+                  <div
+                    className="mb-1.5 flex aspect-[2/3] w-full items-center justify-center rounded-lg bg-panel-raised text-2xl"
+                    aria-hidden="true"
+                  >
                     👤
                   </div>
                 )}
-                <p className="cast-name">{person.name}</p>
-                <p className="cast-character">{person.character}</p>
+                <p className="text-sm font-semibold">{person.name}</p>
+                <p className="text-xs text-ink-muted">{person.character}</p>
               </Link>
             ))}
           </div>
         </section>
       )}
 
-      <section className="rating-section">
-        <h2>Your Rating</h2>
+      <section className="mx-auto mb-8 max-w-[1200px] px-5 md:px-8">
+        <h2 className="mb-4 text-xl font-bold">Your Rating</h2>
         {existingRating && (
-          <div className="existing-rating-summary">
+          <div className="mb-3 flex items-center gap-3 text-sm text-ink-muted">
             <StarRating value={existingRating.rating} readOnly size="sm" />
             <span>Last updated {formatDate(existingRating.updatedAt)}</span>
           </div>
@@ -160,13 +184,15 @@ function MovieDetails() {
       </section>
 
       {similarMovies.length > 0 && (
-        <MovieRow
-          title="Similar Movies"
-          subtitle="Based on this movie's genres, themes and TMDB's own similarity data"
-          movies={similarMovies}
-          isLoading={false}
-          isError={false}
-        />
+        <div className="mx-auto max-w-[1200px] px-5 md:px-8">
+          <MovieRow
+            title="Similar Movies"
+            subtitle="Based on this movie's genres, themes and TMDB's own similarity data"
+            movies={similarMovies}
+            isLoading={false}
+            isError={false}
+          />
+        </div>
       )}
     </div>
   );

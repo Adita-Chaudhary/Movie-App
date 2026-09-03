@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useHistory } from '../contexts/HistoryContext';
 import { useRatings } from '../contexts/RatingsContext';
-import MovieCard from '../components/MovieCard';
+import MovieGrid from '../components/MovieGrid';
 import EmptyState from '../components/EmptyState';
 import ConfirmDialog from '../components/ConfirmDialog';
 import StarRating from '../components/StarRating';
 import TasteProfile from '../components/TasteProfile';
+import PageContainer from '../components/PageContainer';
+import Button from '../components/Button';
 import { tmdbImage } from '../services/tmdbClient';
 import { formatDate, formatYear, truncate } from '../utils/format';
-import '../css/Activity.css';
 
 function HistoryTab() {
   const { history, clearHistory } = useHistory();
@@ -21,28 +22,26 @@ function HistoryTab() {
         icon="🕓"
         title="No recently viewed movies"
         message="Movies you open will show up here."
-        action={
-          <Link to="/" className="state-action">
-            Browse Movies
-          </Link>
-        }
+        action={<Button to="/">Browse Movies</Button>}
       />
     );
   }
 
   return (
     <div>
-      <div className="activity-tab-header">
-        <p>{history.length} movie{history.length === 1 ? '' : 's'} viewed recently</p>
-        <button type="button" className="clear-btn" onClick={() => setConfirmingClear(true)}>
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 text-ink-muted">
+        <p>
+          {history.length} movie{history.length === 1 ? '' : 's'} viewed recently
+        </p>
+        <button
+          type="button"
+          className="border-bad bg-transparent px-3.5 py-1.5 text-sm text-bad"
+          onClick={() => setConfirmingClear(true)}
+        >
           Clear History
         </button>
       </div>
-      <div className="movies-grid stagger">
-        {history.map((movie) => (
-          <MovieCard movie={movie} key={movie.id} />
-        ))}
-      </div>
+      <MovieGrid movies={history} isLoading={false} isError={false} />
       {confirmingClear && (
         <ConfirmDialog
           title="Clear viewing history?"
@@ -69,42 +68,53 @@ function RatingsTab() {
         icon="⭐"
         title="You haven't rated any movies yet"
         message="Open a movie and leave a star rating and review to see it here."
-        action={
-          <Link to="/" className="state-action">
-            Browse Movies
-          </Link>
-        }
+        action={<Button to="/">Browse Movies</Button>}
       />
     );
   }
 
   return (
-    <div className="ratings-list stagger">
+    <div className="stagger flex flex-col gap-4">
       {ratingsList.map((entry) => {
         const posterUrl = tmdbImage(entry.movie.poster_path, 'w185');
         return (
-          <div className="rating-list-item fade-in-up" key={entry.movieId}>
-            <Link to={`/movie/${entry.movieId}`} className="rating-list-poster">
+          <div
+            className="fade-in-up flex gap-4 rounded-[10px] bg-panel p-4 transition-[background-color,box-shadow] duration-200 hover:bg-panel-raised hover:shadow-panel"
+            key={entry.movieId}
+          >
+            <Link to={`/movie/${entry.movieId}`} className="w-16 flex-none sm:w-20">
               {posterUrl ? (
-                <img src={posterUrl} alt={entry.movie.title} loading="lazy" />
+                <img
+                  src={posterUrl}
+                  alt={entry.movie.title}
+                  loading="lazy"
+                  className="block aspect-[2/3] w-16 rounded-md object-cover sm:w-20"
+                />
               ) : (
-                <div className="rating-list-poster-placeholder" aria-hidden="true">
+                <div
+                  className="flex aspect-[2/3] w-16 items-center justify-center rounded-md bg-panel-raised sm:w-20"
+                  aria-hidden="true"
+                >
                   🎬
                 </div>
               )}
             </Link>
-            <div className="rating-list-body">
-              <Link to={`/movie/${entry.movieId}`} className="rating-list-title">
-                {entry.movie.title} <span>({formatYear(entry.movie.release_date)})</span>
+            <div className="min-w-0 flex-1">
+              <Link to={`/movie/${entry.movieId}`} className="mb-1 block font-bold">
+                {entry.movie.title} <span className="font-normal text-ink-muted">({formatYear(entry.movie.release_date)})</span>
               </Link>
               <StarRating value={entry.rating} readOnly size="sm" />
-              {entry.review && <p className="rating-list-review">{truncate(entry.review, 220)}</p>}
-              <p className="rating-list-date">Updated {formatDate(entry.updatedAt)}</p>
-              <div className="rating-list-actions">
-                <Link to={`/movie/${entry.movieId}`} className="rating-list-edit">
+              {entry.review && <p className="my-2 text-sm leading-relaxed text-ink">{truncate(entry.review, 220)}</p>}
+              <p className="mt-1 text-xs text-ink-muted">Updated {formatDate(entry.updatedAt)}</p>
+              <div className="mt-1.5 flex gap-4 text-sm">
+                <Link to={`/movie/${entry.movieId}`} className="font-semibold text-brand">
                   Edit
                 </Link>
-                <button type="button" className="rating-list-delete" onClick={() => setPendingDeleteId(entry.movieId)}>
+                <button
+                  type="button"
+                  className="border-0 bg-transparent p-0 text-sm font-semibold text-bad"
+                  onClick={() => setPendingDeleteId(entry.movieId)}
+                >
                   Delete
                 </button>
               </div>
@@ -130,16 +140,21 @@ function RatingsTab() {
 function Activity() {
   const [activeTab, setActiveTab] = useState('history');
 
+  const tabClass = (tab) =>
+    `border-b-2 px-4 py-3 font-semibold transition-colors duration-200 ${
+      activeTab === tab ? 'border-brand text-brand' : 'border-transparent text-ink-muted'
+    }`;
+
   return (
-    <div className="activity-page">
+    <PageContainer size="narrow">
       <TasteProfile />
 
-      <div className="activity-tabs" role="tablist">
+      <div className="mb-6 flex gap-2 border-b border-line" role="tablist">
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === 'history'}
-          className={activeTab === 'history' ? 'activity-tab active' : 'activity-tab'}
+          className={tabClass('history')}
           onClick={() => setActiveTab('history')}
         >
           Recently Viewed
@@ -148,7 +163,7 @@ function Activity() {
           type="button"
           role="tab"
           aria-selected={activeTab === 'ratings'}
-          className={activeTab === 'ratings' ? 'activity-tab active' : 'activity-tab'}
+          className={tabClass('ratings')}
           onClick={() => setActiveTab('ratings')}
         >
           My Ratings
@@ -156,7 +171,7 @@ function Activity() {
       </div>
 
       {activeTab === 'history' ? <HistoryTab /> : <RatingsTab />}
-    </div>
+    </PageContainer>
   );
 }
 

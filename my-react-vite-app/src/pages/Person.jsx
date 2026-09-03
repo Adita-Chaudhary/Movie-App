@@ -4,10 +4,10 @@ import { usePersonDetails } from '../hooks/usePersonDetails';
 import MovieRow from '../components/MovieRow';
 import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
+import PageContainer from '../components/PageContainer';
 import { tmdbImage } from '../services/tmdbClient';
 import { buildFilmography, knownForMovies } from '../utils/personFilmography';
 import { formatDate } from '../utils/format';
-import '../css/Person.css';
 
 function calculateAge(birthday, deathday) {
   if (!birthday) return null;
@@ -36,28 +36,31 @@ function Person() {
   const age = calculateAge(person.birthday, person.deathday);
 
   return (
-    <div className="person-page">
-      <div className="person-header">
-        <div className="person-photo">
+    <PageContainer size="medium">
+      <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:gap-8 md:mb-10">
+        <div className="mx-auto w-40 flex-none sm:mx-0 sm:w-[220px]">
           {photoUrl ? (
-            <img src={photoUrl} alt={person.name} />
+            <img src={photoUrl} alt={person.name} className="block w-full rounded-[10px] shadow-panel" />
           ) : (
-            <div className="person-photo-placeholder" aria-hidden="true">
+            <div
+              className="flex aspect-[2/3] w-full items-center justify-center rounded-[10px] bg-panel-raised text-5xl"
+              aria-hidden="true"
+            >
               👤
             </div>
           )}
         </div>
 
-        <div className="person-info">
-          <h1>{person.name}</h1>
+        <div className="min-w-0 flex-1">
+          <h1 className="mb-1 text-[clamp(1.6rem,4vw,2.2rem)] font-bold">{person.name}</h1>
 
-          {person.known_for_department && <p className="person-department">{person.known_for_department}</p>}
+          {person.known_for_department && <p className="mb-4 font-semibold text-brand">{person.known_for_department}</p>}
 
-          <dl className="person-facts">
+          <dl className="mb-6 grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
             {person.birthday && (
               <div>
-                <dt>Born</dt>
-                <dd>
+                <dt className="mb-0.5 text-xs uppercase tracking-wide text-ink-muted">Born</dt>
+                <dd className="text-[0.95rem]">
                   {formatDate(person.birthday)}
                   {age !== null && !person.deathday && ` (age ${age})`}
                 </dd>
@@ -65,8 +68,8 @@ function Person() {
             )}
             {person.deathday && (
               <div>
-                <dt>Died</dt>
-                <dd>
+                <dt className="mb-0.5 text-xs uppercase tracking-wide text-ink-muted">Died</dt>
+                <dd className="text-[0.95rem]">
                   {formatDate(person.deathday)}
                   {age !== null && ` (age ${age})`}
                 </dd>
@@ -74,25 +77,27 @@ function Person() {
             )}
             {person.place_of_birth && (
               <div>
-                <dt>Birthplace</dt>
-                <dd>{person.place_of_birth}</dd>
+                <dt className="mb-0.5 text-xs uppercase tracking-wide text-ink-muted">Birthplace</dt>
+                <dd className="text-[0.95rem]">{person.place_of_birth}</dd>
               </div>
             )}
             {filmography.length > 0 && (
               <div>
-                <dt>Filmography</dt>
-                <dd>{filmography.length} movie{filmography.length === 1 ? '' : 's'} on record</dd>
+                <dt className="mb-0.5 text-xs uppercase tracking-wide text-ink-muted">Filmography</dt>
+                <dd className="text-[0.95rem]">
+                  {filmography.length} movie{filmography.length === 1 ? '' : 's'} on record
+                </dd>
               </div>
             )}
             {person.also_known_as?.length > 0 && (
               <div>
-                <dt>Also known as</dt>
-                <dd>{person.also_known_as.slice(0, 3).join(', ')}</dd>
+                <dt className="mb-0.5 text-xs uppercase tracking-wide text-ink-muted">Also known as</dt>
+                <dd className="text-[0.95rem]">{person.also_known_as.slice(0, 3).join(', ')}</dd>
               </div>
             )}
           </dl>
 
-          <p className="person-biography">{person.biography?.trim() || 'No biography available.'}</p>
+          <p className="whitespace-pre-line leading-relaxed">{person.biography?.trim() || 'No biography available.'}</p>
         </div>
       </div>
 
@@ -108,8 +113,10 @@ function Person() {
         />
       )}
 
-      {knownFor.length === 0 && filmography.length === 0 && <p className="person-no-credits">No known filmography available.</p>}
-    </div>
+      {knownFor.length === 0 && filmography.length === 0 && (
+        <p className="text-ink-muted">No known filmography available.</p>
+      )}
+    </PageContainer>
   );
 }
 

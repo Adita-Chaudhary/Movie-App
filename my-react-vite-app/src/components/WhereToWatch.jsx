@@ -6,7 +6,6 @@ import { withCurrentRegionOption } from '../utils/region';
 import { tmdbImage } from '../services/tmdbClient';
 import Spinner from './Spinner';
 import EmptyState from './EmptyState';
-import '../css/WhereToWatch.css';
 
 // Order matters: streaming/free options are usually more relevant to a
 // user than pay options, so they're surfaced first.
@@ -38,16 +37,16 @@ function WhereToWatch({ movieId }) {
   const hasAnyProviders = Boolean(regionData) && CATEGORIES.some(({ key }) => regionData[key]?.length > 0);
 
   return (
-    <section className="where-to-watch fade-in-up">
-      <div className="where-to-watch-header">
-        <h2>Where to Watch</h2>
+    <section className="fade-in-up mx-auto mb-8 max-w-[1200px] rounded-xl bg-panel p-5 sm:p-6">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-xl font-bold">Where to Watch</h2>
         {regionOptions.length > 0 && (
-          <label className="region-select-label">
+          <label className="flex items-center gap-2 text-sm text-ink-muted">
             Region
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
-              className="region-select"
+              className="max-w-[200px] rounded-md px-2.5 py-1.5 text-sm"
               aria-label="Select region for watch availability"
             >
               {regionOptions.map((r) => (
@@ -62,27 +61,33 @@ function WhereToWatch({ movieId }) {
 
       {isLoading && <Spinner label="Loading watch options" />}
 
-      {isError && <p className="where-to-watch-error">⚠ {error}</p>}
+      {isError && <p className="text-bad">⚠ {error}</p>}
 
       {!isLoading && !isError && (
         <>
           {hasAnyProviders ? (
-            <div className="where-to-watch-body">
+            <div>
               {CATEGORIES.map(({ key, label }) => {
                 const providers = regionData[key];
                 if (!providers || providers.length === 0) return null;
                 return (
-                  <div className="provider-category" key={key}>
-                    <h3>{label}</h3>
-                    <div className="provider-list">
+                  <div className="mb-4 last:mb-0" key={key}>
+                    <h3 className="mb-2.5 text-xs uppercase tracking-wide text-ink-muted">{label}</h3>
+                    <div className="flex flex-wrap gap-2.5">
                       {providers.map((provider) => {
                         const logoUrl = tmdbImage(provider.logo_path, 'w92');
                         return (
-                          <div className="provider-badge" key={provider.provider_id} title={provider.provider_name}>
+                          <div
+                            className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-panel-raised transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.06]"
+                            key={provider.provider_id}
+                            title={provider.provider_name}
+                          >
                             {logoUrl ? (
-                              <img src={logoUrl} alt={provider.provider_name} loading="lazy" />
+                              <img src={logoUrl} alt={provider.provider_name} loading="lazy" className="block h-full w-full object-cover" />
                             ) : (
-                              <span className="provider-badge-fallback">{provider.provider_name}</span>
+                              <span className="p-1 text-center text-[0.55rem] leading-tight text-ink-muted">
+                                {provider.provider_name}
+                              </span>
                             )}
                           </div>
                         );
@@ -101,7 +106,12 @@ function WhereToWatch({ movieId }) {
           )}
 
           {regionData?.link && (
-            <a href={regionData.link} target="_blank" rel="noopener noreferrer" className="where-to-watch-link">
+            <a
+              href={regionData.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-block text-sm font-semibold text-brand transition-colors hover:text-brand-hover"
+            >
               View Watch Options on TMDB ↗
             </a>
           )}
@@ -109,7 +119,7 @@ function WhereToWatch({ movieId }) {
       )}
 
       {/* Required attribution for TMDB/JustWatch watch-provider data. */}
-      <p className="where-to-watch-attribution">Watch provider data provided by JustWatch.</p>
+      <p className="mt-5 text-xs text-ink-muted opacity-75">Watch provider data provided by JustWatch.</p>
     </section>
   );
 }

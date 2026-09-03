@@ -1,5 +1,3 @@
-import '../css/FilterBar.css';
-
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: CURRENT_YEAR - 1949 }, (_, i) => CURRENT_YEAR - i);
 
@@ -22,10 +20,14 @@ function FilterBar({ genres, filters, onChange, disableSort = false }) {
   const update = (key, value) => onChange({ ...filters, [key]: value || undefined });
 
   return (
-    <div className="filter-bar">
-      <label className="filter-field">
+    <div className="mx-auto mb-6 flex max-w-[900px] flex-wrap gap-4 rounded-lg bg-panel p-4">
+      <label className="flex flex-1 basis-[140px] flex-col gap-1.5 text-sm text-ink-muted">
         <span>Genre</span>
-        <select value={filters.genre ?? ''} onChange={(e) => update('genre', e.target.value)}>
+        <select
+          className="rounded p-2 text-[0.95rem]"
+          value={filters.genre ?? ''}
+          onChange={(e) => update('genre', e.target.value)}
+        >
           <option value="">All</option>
           {genres.map((genre) => (
             <option key={genre.id} value={genre.id}>
@@ -35,9 +37,13 @@ function FilterBar({ genres, filters, onChange, disableSort = false }) {
         </select>
       </label>
 
-      <label className="filter-field">
+      <label className="flex flex-1 basis-[140px] flex-col gap-1.5 text-sm text-ink-muted">
         <span>Year</span>
-        <select value={filters.year ?? ''} onChange={(e) => update('year', e.target.value)}>
+        <select
+          className="rounded p-2 text-[0.95rem]"
+          value={filters.year ?? ''}
+          onChange={(e) => update('year', e.target.value)}
+        >
           <option value="">All</option>
           {YEARS.map((year) => (
             <option key={year} value={year}>
@@ -47,9 +53,10 @@ function FilterBar({ genres, filters, onChange, disableSort = false }) {
         </select>
       </label>
 
-      <label className="filter-field">
+      <label className="flex flex-1 basis-[140px] flex-col gap-1.5 text-sm text-ink-muted">
         <span>Min Rating</span>
         <select
+          className="rounded p-2 text-[0.95rem]"
           value={filters.minRating ?? ''}
           onChange={(e) => update('minRating', e.target.value)}
         >
@@ -62,9 +69,15 @@ function FilterBar({ genres, filters, onChange, disableSort = false }) {
         </select>
       </label>
 
-      <label className="filter-field">
-        <span>Sort By {disableSort && <em className="filter-hint">(applies to this page)</em>}</span>
-        <select value={filters.sortBy ?? 'popularity.desc'} onChange={(e) => update('sortBy', e.target.value)}>
+      <label className="flex flex-1 basis-[140px] flex-col gap-1.5 text-sm text-ink-muted">
+        <span>
+          Sort By {disableSort && <em className="text-xs italic">(applies to this page)</em>}
+        </span>
+        <select
+          className="rounded p-2 text-[0.95rem]"
+          value={filters.sortBy ?? 'popularity.desc'}
+          onChange={(e) => update('sortBy', e.target.value)}
+        >
           {SORT_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import MovieRow from '../components/MovieRow';
 import RecommendationRow from '../components/RecommendationRow';
 import MovieNight from '../components/MovieNight';
+import PageContainer from '../components/PageContainer';
 import { useMovieList } from '../hooks/useMovieList';
 import { useRecommendations } from '../hooks/useRecommendations';
 import { useWatchlist } from '../contexts/WatchlistContext';
@@ -12,7 +13,6 @@ import {
   getTopRatedMovies,
   getUpcomingMovies,
 } from '../services/movieApi';
-import '../css/Home.css';
 
 function Home() {
   const trending = useMovieList(getTrendingMovies, []);
@@ -40,10 +40,12 @@ function Home() {
   const { recommendations, isPersonalized, isLoading: isRecommendationsLoading } = useRecommendations(candidatePool);
 
   return (
-    <div className="home">
-      <div className="home-hero">
-        <h1>Discover your next favorite movie</h1>
-        <p>Trending picks, personal ratings, and recommendations based on what you actually watch.</p>
+    <PageContainer>
+      <div className="mb-8">
+        <h1 className="mb-2 text-[clamp(1.6rem,4vw,2.4rem)] font-bold">Discover your next favorite movie</h1>
+        <p className="text-ink-muted">
+          Trending picks, personal ratings, and recommendations based on what you actually watch.
+        </p>
       </div>
 
       <RecommendationRow
@@ -93,7 +95,7 @@ function Home() {
       {history.length > 0 && (
         <MovieRow title="Recently Viewed" movies={history.slice(0, 12)} isLoading={false} isError={false} />
       )}
-    </div>
+    </PageContainer>
   );
 }
 

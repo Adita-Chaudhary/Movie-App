@@ -6,7 +6,7 @@ import EmptyState from '../components/EmptyState';
 import { useDebounce } from '../hooks/useDebounce';
 import { useGenres } from '../hooks/useGenres';
 import { searchMovies, discoverMovies } from '../services/movieApi';
-import '../css/Search.css';
+import PageContainer from '../components/PageContainer';
 
 const DEFAULT_FILTERS = { genre: undefined, year: undefined, minRating: undefined, sortBy: 'popularity.desc' };
 
@@ -119,11 +119,11 @@ function Search() {
   }, [fetchPage, isLoadingMore, page, totalPages]);
 
   return (
-    <div className="search-page">
-      <div className="search-page-header">
+    <PageContainer>
+      <div className="mx-auto mb-6 max-w-[900px]">
         <input
           type="search"
-          className="search-page-input"
+          className="w-full rounded-lg px-4 py-3.5 text-base sm:text-[1.05rem]"
           placeholder="Search for movies..."
           value={queryInput}
           onChange={(e) => setQueryInput(e.target.value)}
@@ -150,7 +150,7 @@ function Search() {
           />
         }
       />
-    </div>
+    </PageContainer>
   );
 }
 

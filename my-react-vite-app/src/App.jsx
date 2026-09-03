@@ -1,4 +1,3 @@
-import "./css/App.css";
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from "./components/NavBar";
 import ScrollToTop from "./components/ScrollToTop";
@@ -18,7 +17,7 @@ function App() {
     <AppProviders>
       <ScrollToTop />
       <Navbar />
-      <main className="main-content">
+      <main className="flex w-full flex-1 flex-col p-4 sm:p-6 lg:p-8">
         {/* Keying on pathname forces a remount per navigation (including
             in-route param changes, e.g. one movie's details to
             another's), which pairs with the .page-transition fade-in

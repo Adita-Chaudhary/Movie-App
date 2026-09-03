@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import StarRating from './StarRating';
-import '../css/RatingReviewForm.css';
+import Button from './Button';
 
 /**
  * Add/edit a personal 1-5 star rating + short review for one movie.
@@ -17,26 +17,26 @@ function RatingReviewForm({ existing, onSave, onDelete }) {
   }
 
   return (
-    <form className="rating-form" onSubmit={handleSubmit}>
-      <div className="rating-form-stars">
+    <form className="flex flex-col gap-3 rounded-[10px] bg-panel p-5" onSubmit={handleSubmit}>
+      <div>
         <StarRating value={rating} onChange={setRating} size="lg" />
       </div>
       <textarea
-        className="rating-form-review"
+        className="w-full resize-y rounded-md p-3 text-sm"
         placeholder="Write a short review (optional)"
         value={review}
         onChange={(e) => setReview(e.target.value)}
         maxLength={1000}
         rows={3}
       />
-      <div className="rating-form-actions">
-        <button type="submit" className="rating-form-save" disabled={rating === 0}>
+      <div className="flex gap-3">
+        <Button type="submit" disabled={rating === 0}>
           {existing ? 'Update Rating' : 'Save Rating'}
-        </button>
+        </Button>
         {existing && (
-          <button type="button" className="rating-form-delete" onClick={onDelete}>
+          <Button type="button" variant="danger" onClick={onDelete}>
             Delete
-          </button>
+          </Button>
         )}
       </div>
     </form>

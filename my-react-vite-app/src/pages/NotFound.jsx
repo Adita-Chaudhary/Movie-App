@@ -1,18 +1,14 @@
-import { Link } from 'react-router-dom';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/Button';
 
 function NotFound() {
   return (
-    <div style={{ padding: '2rem' }}>
+    <div className="p-8">
       <EmptyState
         icon="🧭"
         title="Page not found"
         message="The page you're looking for doesn't exist."
-        action={
-          <Link to="/" className="state-action">
-            Back to Home
-          </Link>
-        }
+        action={<Button to="/">Back to Home</Button>}
       />
     </div>
   );

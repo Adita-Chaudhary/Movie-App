@@ -1,13 +1,13 @@
-import '../css/States.css';
+import Button from './Button';
 
 function ErrorState({ message = 'Something went wrong.', onRetry }) {
   return (
-    <div className="state-block state-error" role="alert">
-      <p className="state-title">⚠ {message}</p>
+    <div className="fade-in-up mx-auto my-4 max-w-[600px] rounded-xl bg-panel p-8 text-center sm:p-12" role="alert">
+      <p className="mb-2 text-lg font-semibold text-bad">⚠ {message}</p>
       {onRetry && (
-        <button type="button" onClick={onRetry} className="state-action">
+        <Button onClick={onRetry} className="mt-4">
           Try again
-        </button>
+        </Button>
       )}
     </div>
   );

@@ -1,20 +1,21 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it } from 'vitest';
 import Watchlist from './Watchlist';
 import { WatchlistProvider } from '../contexts/WatchlistContext';
+import { MOVIE_GRID_CLASS } from '../components/MovieGrid';
 
 /**
  * Regression test for a real layout bug: with a single watchlist movie,
  * `.movies-grid`'s CSS grid (`auto-fit`) collapsed to one track and
  * stretched it to fill the whole row, blowing the card up to a
- * full-width, hero-like size. The fix was auto-fill (see MovieGrid.css).
- * jsdom doesn't run real layout, so this can't assert pixel widths -
- * instead it asserts the DOM structure is the same compact-card grid
- * markup regardless of count, and separately guards the CSS source
- * itself so the specific regression can't silently come back.
+ * full-width, hero-like size. The fix was auto-fill (see
+ * MovieGrid.jsx's MOVIE_GRID_CLASS - the grid is now a Tailwind
+ * arbitrary-value utility rather than a separate CSS file, so this
+ * checks the actual class applied to the rendered grid instead of
+ * reading a stylesheet). jsdom doesn't run real layout, so this can't
+ * assert pixel widths - instead it asserts the DOM structure is the
+ * same compact-card grid markup regardless of count.
  */
 
 function seedWatchlist(movies) {
@@ -73,11 +74,15 @@ describe('Watchlist page', () => {
     expect(screen.getByText(/your watchlist \(10\)/i)).toBeInTheDocument();
   });
 
-  it('never regresses to the auto-fit grid that caused the single-card hero bug (jsdom cannot compute real layout, so this guards the CSS source directly)', () => {
-    const cssPath = resolve(process.cwd(), 'src/css/MovieGrid.css');
-    const css = readFileSync(cssPath, 'utf-8');
+  it('never regresses to the auto-fit grid that caused the single-card hero bug', () => {
+    seedWatchlist([movie(1)]);
+    const { container } = renderWatchlist();
 
-    expect(css).toMatch(/grid-template-columns:\s*repeat\(auto-fill,/);
-    expect(css).not.toMatch(/grid-template-columns:\s*repeat\(auto-fit,/);
+    const grid = container.querySelector('.movies-grid');
+    expect(grid.className).toMatch(/grid-cols-\[repeat\(auto-fill,/);
+    expect(grid.className).not.toMatch(/auto-fit/);
+    // Sanity check that MOVIE_GRID_CLASS (the single source of truth
+    // used by every page that renders a movie grid) is what's rendered.
+    expect(grid.className).toBe(MOVIE_GRID_CLASS);
   });
 });

@@ -1,38 +1,30 @@
-import { Link } from 'react-router-dom';
 import { useWatchlist } from '../contexts/WatchlistContext';
-import MovieCard from '../components/MovieCard';
+import MovieGrid from '../components/MovieGrid';
 import EmptyState from '../components/EmptyState';
-import '../css/Watchlist.css';
+import Button from '../components/Button';
+import PageContainer from '../components/PageContainer';
 
 function Watchlist() {
   const { watchlist, count } = useWatchlist();
 
   if (count === 0) {
     return (
-      <div className="watchlist-page">
+      <PageContainer>
         <EmptyState
           icon="🍿"
           title="Your watchlist is empty"
           message="Add movies you want to watch later by tapping the + button on any movie card."
-          action={
-            <Link to="/" className="state-action">
-              Browse Movies
-            </Link>
-          }
+          action={<Button to="/">Browse Movies</Button>}
         />
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="watchlist-page">
-      <h2>Your Watchlist ({count})</h2>
-      <div className="movies-grid stagger">
-        {watchlist.map((movie) => (
-          <MovieCard movie={movie} key={movie.id} />
-        ))}
-      </div>
-    </div>
+    <PageContainer>
+      <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">Your Watchlist ({count})</h2>
+      <MovieGrid movies={watchlist} isLoading={false} isError={false} />
+    </PageContainer>
   );
 }
 

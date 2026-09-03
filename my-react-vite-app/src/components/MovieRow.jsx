@@ -4,8 +4,11 @@ import ErrorState from './ErrorState';
 
 // Shared by RecommendationRow too, so both horizontally-scrolling row
 // styles (personalized or not) stay in lockstep instead of drifting.
+// The mask-image fades both edges to hint that more cards exist off
+// screen - a static gradient rather than a scroll-position-tracked one,
+// so it needs no scroll listener and can't jank on scroll.
 export const ROW_SCROLLER_CLASS =
-  'stagger flex gap-3 overflow-x-auto pb-3 [scroll-snap-type:x_proximity] scroll-smooth [scrollbar-width:thin] sm:gap-4';
+  'stagger flex gap-3 overflow-x-auto pb-3 [scroll-snap-type:x_proximity] scroll-smooth [scrollbar-width:thin] sm:gap-4 [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)]';
 export const ROW_ITEM_CLASS = 'w-[130px] flex-none [scroll-snap-align:start] sm:w-[170px]';
 
 /** A titled, horizontally-scrolling section of movies, used on the homepage. */

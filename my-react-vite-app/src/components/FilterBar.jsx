@@ -24,7 +24,7 @@ function FilterBar({ genres, filters, onChange, disableSort = false }) {
       <label className="flex flex-1 basis-[140px] flex-col gap-1.5 text-sm text-ink-muted">
         <span>Genre</span>
         <select
-          className="rounded p-2 text-[0.95rem]"
+          className="rounded p-2 text-[0.95rem] transition-shadow duration-200 focus:ring-4 focus:ring-brand/15"
           value={filters.genre ?? ''}
           onChange={(e) => update('genre', e.target.value)}
         >
@@ -40,7 +40,7 @@ function FilterBar({ genres, filters, onChange, disableSort = false }) {
       <label className="flex flex-1 basis-[140px] flex-col gap-1.5 text-sm text-ink-muted">
         <span>Year</span>
         <select
-          className="rounded p-2 text-[0.95rem]"
+          className="rounded p-2 text-[0.95rem] transition-shadow duration-200 focus:ring-4 focus:ring-brand/15"
           value={filters.year ?? ''}
           onChange={(e) => update('year', e.target.value)}
         >
@@ -56,7 +56,7 @@ function FilterBar({ genres, filters, onChange, disableSort = false }) {
       <label className="flex flex-1 basis-[140px] flex-col gap-1.5 text-sm text-ink-muted">
         <span>Min Rating</span>
         <select
-          className="rounded p-2 text-[0.95rem]"
+          className="rounded p-2 text-[0.95rem] transition-shadow duration-200 focus:ring-4 focus:ring-brand/15"
           value={filters.minRating ?? ''}
           onChange={(e) => update('minRating', e.target.value)}
         >
@@ -74,7 +74,7 @@ function FilterBar({ genres, filters, onChange, disableSort = false }) {
           Sort By {disableSort && <em className="text-xs italic">(applies to this page)</em>}
         </span>
         <select
-          className="rounded p-2 text-[0.95rem]"
+          className="rounded p-2 text-[0.95rem] transition-shadow duration-200 focus:ring-4 focus:ring-brand/15"
           value={filters.sortBy ?? 'popularity.desc'}
           onChange={(e) => update('sortBy', e.target.value)}
         >

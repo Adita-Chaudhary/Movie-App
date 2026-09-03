@@ -5,6 +5,7 @@ import MovieRow from '../components/MovieRow';
 import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
 import PageContainer from '../components/PageContainer';
+import Reveal from '../components/Reveal';
 import { tmdbImage } from '../services/tmdbClient';
 import { buildFilmography, knownForMovies } from '../utils/personFilmography';
 import { formatDate } from '../utils/format';
@@ -40,7 +41,11 @@ function Person() {
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:gap-8 md:mb-10">
         <div className="mx-auto w-40 flex-none sm:mx-0 sm:w-[220px]">
           {photoUrl ? (
-            <img src={photoUrl} alt={person.name} className="block w-full rounded-[10px] shadow-panel" />
+            <img
+            src={photoUrl}
+            alt={person.name}
+            className="scale-in block w-full rounded-[10px] shadow-panel transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_16px_28px_rgba(0,0,0,0.35)]"
+          />
           ) : (
             <div
               className="flex aspect-[2/3] w-full items-center justify-center rounded-[10px] bg-panel-raised text-5xl"
@@ -51,12 +56,14 @@ function Person() {
           )}
         </div>
 
-        <div className="min-w-0 flex-1">
-          <h1 className="mb-1 text-[clamp(1.6rem,4vw,2.2rem)] font-bold">{person.name}</h1>
+        <div className="stagger min-w-0 flex-1">
+          <h1 className="fade-in-up mb-1 text-[clamp(1.6rem,4vw,2.2rem)] font-bold">{person.name}</h1>
 
-          {person.known_for_department && <p className="mb-4 font-semibold text-brand">{person.known_for_department}</p>}
+          {person.known_for_department && (
+            <p className="fade-in-up mb-4 font-semibold text-brand">{person.known_for_department}</p>
+          )}
 
-          <dl className="mb-6 grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
+          <dl className="fade-in-up mb-6 grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
             {person.birthday && (
               <div>
                 <dt className="mb-0.5 text-xs uppercase tracking-wide text-ink-muted">Born</dt>
@@ -97,20 +104,28 @@ function Person() {
             )}
           </dl>
 
-          <p className="whitespace-pre-line leading-relaxed">{person.biography?.trim() || 'No biography available.'}</p>
+          <p className="fade-in-up whitespace-pre-line leading-relaxed">
+            {person.biography?.trim() || 'No biography available.'}
+          </p>
         </div>
       </div>
 
-      {knownFor.length > 0 && <MovieRow title="Known For" movies={knownFor} isLoading={false} isError={false} />}
+      {knownFor.length > 0 && (
+        <Reveal>
+          <MovieRow title="Known For" movies={knownFor} isLoading={false} isError={false} />
+        </Reveal>
+      )}
 
       {filmography.length > 0 && (
-        <MovieRow
-          title="Filmography"
-          subtitle={`${filmography.length} movie${filmography.length === 1 ? '' : 's'}, most recent first`}
-          movies={filmography}
-          isLoading={false}
-          isError={false}
-        />
+        <Reveal>
+          <MovieRow
+            title="Filmography"
+            subtitle={`${filmography.length} movie${filmography.length === 1 ? '' : 's'}, most recent first`}
+            movies={filmography}
+            isLoading={false}
+            isError={false}
+          />
+        </Reveal>
       )}
 
       {knownFor.length === 0 && filmography.length === 0 && (

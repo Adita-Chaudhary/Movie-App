@@ -22,7 +22,7 @@ function StarRating({ value = 0, onChange, readOnly = false, size = 'md' }) {
 
   if (readOnly) {
     return (
-      <div className="inline-flex gap-1" aria-label={`Rated ${value} out of 5`}>
+      <div className="fade-in inline-flex gap-1" aria-label={`Rated ${value} out of 5`}>
         {STAR_VALUES.map((star) => (
           <span
             key={star}

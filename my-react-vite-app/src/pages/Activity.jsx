@@ -11,12 +11,17 @@ import PageContainer from '../components/PageContainer';
 import Button from '../components/Button';
 import { tmdbImage } from '../services/tmdbClient';
 import { formatDate, formatYear, truncate } from '../utils/format';
+import { useExitingItems } from '../hooks/useExitingItems';
 
 function HistoryTab() {
   const { history, clearHistory } = useHistory();
   const [confirmingClear, setConfirmingClear] = useState(false);
+  // "Clear History" empties the list in one shot - without this, the
+  // whole grid's exit animation would be cut off the instant it happens,
+  // same issue as removing the last Watchlist card (see Watchlist.jsx).
+  const stillAnimatingOut = useExitingItems(history, (movie) => movie.id).length > 0;
 
-  if (history.length === 0) {
+  if (history.length === 0 && !stillAnimatingOut) {
     return (
       <EmptyState
         icon="🕓"
@@ -41,7 +46,7 @@ function HistoryTab() {
           Clear History
         </button>
       </div>
-      <MovieGrid movies={history} isLoading={false} isError={false} />
+      <MovieGrid movies={history} isLoading={false} isError={false} animateRemovals />
       {confirmingClear && (
         <ConfirmDialog
           title="Clear viewing history?"

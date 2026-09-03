@@ -1,14 +1,18 @@
 import MovieCard from './MovieCard';
+import InfoTooltip from './InfoTooltip';
 import { SkeletonRow } from './SkeletonCard';
 import { ROW_SCROLLER_CLASS, ROW_ITEM_CLASS } from './MovieRow';
 
 /**
  * Renders "Recommended for You", reusing MovieRow's row/scroller/item
- * classes but adding a short, honest explanation caption under each
- * card - see utils/recommendations/explain.js for how `explanation` is
- * generated. Falls back to a "Popular Picks" framing (no explanation
- * captions, since a fallback pick isn't personalized) when the user
- * doesn't have enough activity yet for real personalization.
+ * classes. Each card's explanation (see utils/recommendations/explain.js)
+ * is still generated exactly as before and still fully available - it's
+ * just surfaced through a compact "i" badge + tooltip (InfoTooltip)
+ * instead of a permanent multi-line caption under every card, so the row
+ * stays the same height as every other row. Falls back to a
+ * "Popular Picks" framing (no explanations, since a fallback pick isn't
+ * personalized) when the user doesn't have enough activity yet for real
+ * personalization.
  */
 function RecommendationRow({ recommendations, isLoading, isPersonalized }) {
   if (isLoading) {
@@ -35,16 +39,15 @@ function RecommendationRow({ recommendations, isLoading, isPersonalized }) {
       </div>
       <div className={ROW_SCROLLER_CLASS}>
         {recommendations.map(({ movie, explanation }) => (
-          <div className={`${ROW_ITEM_CLASS} flex flex-col gap-2`} key={movie.id}>
-            <MovieCard movie={movie} />
-            {explanation?.summary && (
-              <p
-                className="recommendation-reason line-clamp-3 text-xs leading-snug text-ink-muted"
-                title={explanation.summary}
-              >
-                {explanation.summary}
-              </p>
-            )}
+          <div className={ROW_ITEM_CLASS} key={movie.id}>
+            <MovieCard
+              movie={movie}
+              titleBadge={
+                explanation?.summary && (
+                  <InfoTooltip label={`Why ${movie.title} was recommended`} content={explanation.summary} />
+                )
+              }
+            />
           </div>
         ))}
       </div>

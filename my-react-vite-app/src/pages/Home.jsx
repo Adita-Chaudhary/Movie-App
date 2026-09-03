@@ -3,6 +3,7 @@ import MovieRow from '../components/MovieRow';
 import RecommendationRow from '../components/RecommendationRow';
 import MovieNight from '../components/MovieNight';
 import PageContainer from '../components/PageContainer';
+import Reveal from '../components/Reveal';
 import { useMovieList } from '../hooks/useMovieList';
 import { useRecommendations } from '../hooks/useRecommendations';
 import { useWatchlist } from '../contexts/WatchlistContext';
@@ -41,59 +42,79 @@ function Home() {
 
   return (
     <PageContainer>
-      <div className="mb-8">
-        <h1 className="mb-2 text-[clamp(1.6rem,4vw,2.4rem)] font-bold">Discover your next favorite movie</h1>
-        <p className="text-ink-muted">
-          Trending picks, personal ratings, and recommendations based on what you actually watch.
-        </p>
+      <div className="hero-ambient relative mb-10 overflow-hidden rounded-2xl px-5 py-10 sm:px-10 sm:py-14">
+        <div className="stagger relative">
+          <h1 className="fade-in-up mb-3 text-[clamp(1.8rem,4.5vw,2.8rem)] font-bold">
+            Discover your next favorite movie
+          </h1>
+          <p className="fade-in-up max-w-xl text-ink-muted">
+            Trending picks, personal ratings, and recommendations based on what you actually watch.
+          </p>
+        </div>
       </div>
 
-      <RecommendationRow
-        recommendations={recommendations}
-        isLoading={isRecommendationsLoading}
-        isPersonalized={isPersonalized}
-      />
+      <Reveal>
+        <RecommendationRow
+          recommendations={recommendations}
+          isLoading={isRecommendationsLoading}
+          isPersonalized={isPersonalized}
+        />
+      </Reveal>
 
-      <MovieNight recommendations={recommendations} isPersonalized={isPersonalized} />
+      <Reveal>
+        <MovieNight recommendations={recommendations} isPersonalized={isPersonalized} />
+      </Reveal>
 
       {watchlist.length > 0 && (
-        <MovieRow title="From Your Watchlist" movies={watchlist.slice(0, 12)} isLoading={false} isError={false} />
+        <Reveal>
+          <MovieRow title="From Your Watchlist" movies={watchlist.slice(0, 12)} isLoading={false} isError={false} />
+        </Reveal>
       )}
 
-      <MovieRow
-        title="Trending This Week"
-        movies={trending.movies}
-        isLoading={trending.isLoading}
-        isError={trending.isError}
-        errorMessage={trending.error}
-      />
+      <Reveal>
+        <MovieRow
+          title="Trending This Week"
+          movies={trending.movies}
+          isLoading={trending.isLoading}
+          isError={trending.isError}
+          errorMessage={trending.error}
+        />
+      </Reveal>
 
-      <MovieRow
-        title="Popular"
-        movies={popular.movies}
-        isLoading={popular.isLoading}
-        isError={popular.isError}
-        errorMessage={popular.error}
-      />
+      <Reveal>
+        <MovieRow
+          title="Popular"
+          movies={popular.movies}
+          isLoading={popular.isLoading}
+          isError={popular.isError}
+          errorMessage={popular.error}
+        />
+      </Reveal>
 
-      <MovieRow
-        title="Top Rated"
-        movies={topRated.movies}
-        isLoading={topRated.isLoading}
-        isError={topRated.isError}
-        errorMessage={topRated.error}
-      />
+      <Reveal>
+        <MovieRow
+          title="Top Rated"
+          movies={topRated.movies}
+          isLoading={topRated.isLoading}
+          isError={topRated.isError}
+          errorMessage={topRated.error}
+        />
+      </Reveal>
 
-      <MovieRow
-        title="Upcoming"
-        movies={upcoming.movies}
-        isLoading={upcoming.isLoading}
-        isError={upcoming.isError}
-        errorMessage={upcoming.error}
-      />
+      <Reveal>
+        <MovieRow
+          title="Upcoming"
+          movies={upcoming.movies}
+          isLoading={upcoming.isLoading}
+          isError={upcoming.isError}
+          errorMessage={upcoming.error}
+        />
+      </Reveal>
 
       {history.length > 0 && (
-        <MovieRow title="Recently Viewed" movies={history.slice(0, 12)} isLoading={false} isError={false} />
+        <Reveal>
+          <MovieRow title="Recently Viewed" movies={history.slice(0, 12)} isLoading={false} isError={false} />
+        </Reveal>
       )}
     </PageContainer>
   );

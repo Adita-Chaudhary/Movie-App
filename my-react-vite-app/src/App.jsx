@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from "./components/NavBar";
+import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import { AppProviders } from "./contexts/AppProviders";
 import Home from "./pages/Home";
@@ -35,6 +36,7 @@ function App() {
           </Routes>
         </div>
       </main>
+      <Footer />
     </AppProviders>
   );
 }

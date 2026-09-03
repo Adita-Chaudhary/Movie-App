@@ -69,6 +69,90 @@
   }
 }
 
+/* Smaller-scale counterpart to fadeInUp (6px vs 14px, 0.28s vs 0.5s) for
+   compact UI like search suggestions, where the full card-sized motion
+   would feel sluggish for something that can re-render per keystroke. */
+@keyframes fadeInUpSm {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown/menu opening - fade + a small downward settle, distinct from
+   fadeIn (opacity-only) used elsewhere for simple overlays. */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Removal animation for list items (e.g. a card leaving the Watchlist
+   grid) - paired with useExitingItems.js, which keeps the item mounted
+   just long enough for this to play before it's actually removed, so
+   there's no need for a separate library-driven exit transition. */
+@keyframes fadeOutShrink {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+/* Extremely slow, single-pass zoom for a backdrop image (Movie Details) -
+   deliberately NOT infinite/alternating, so it settles rather than
+   drawing ongoing attention ("cinematic still", not a slideshow). */
+@keyframes kenBurns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.045);
+  }
+}
+
+/* Gentle up/down bob for an empty-state icon - the one place a small,
+   continuous "ambient" motion is used outside the homepage hero, kept to
+   a couple of pixels so it reads as a light touch rather than a
+   cartoonish bounce. */
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.float-icon {
+  animation: floatY 3.2s ease-in-out infinite;
+}
+
+/* Ambient sheen for the homepage hero band - slides between two colors
+   already in the theme's own palette (panel/surface-raised), so it reads
+   as a subtle premium sheen rather than introducing any new hue. */
+@keyframes heroSheen {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 .fade-in-up {
   animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--stagger-delay, 0ms);
@@ -82,6 +166,32 @@
 .scale-in {
   animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--stagger-delay, 0ms);
+}
+
+.fade-in-sm {
+  animation: fadeInUpSm 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+.dropdown-in {
+  animation: fadeInDown 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Applied to a list item while it's being removed (see useExitingItems.js).
+   pointer-events: none keeps it from being interacted with mid-exit. */
+.exiting {
+  animation: fadeOutShrink 0.22s cubic-bezier(0.4, 0, 1, 1) both;
+  pointer-events: none;
+}
+
+.backdrop-ken-burns {
+  animation: kenBurns 18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-ambient {
+  background: linear-gradient(120deg, var(--color-panel) 0%, var(--color-panel-raised) 45%, var(--color-panel) 100%);
+  background-size: 200% 200%;
+  animation: heroSheen 14s ease-in-out infinite;
 }
 
 /* Capped at ~10 explicit steps, then one shared delay for the rest - a
@@ -120,5 +230,16 @@
 
 /** Page-level transition wrapper - see App.jsx (remounted per route via a pathname key). */
 .page-transition {
-  animation: fadeIn 0.3s ease both;
+  animation: pageEnter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -19,7 +19,11 @@ function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-line bg-canvas px-4 py-3 md:px-8 md:py-3.5">
       <div className="flex items-center gap-4 md:gap-6">
-        <Link to="/" className="whitespace-nowrap text-xl font-extrabold text-brand md:text-2xl" onClick={closeMenu}>
+        <Link
+          to="/"
+          className="fade-in inline-block whitespace-nowrap text-xl font-extrabold text-brand transition-transform duration-200 hover:scale-105 md:text-2xl"
+          onClick={closeMenu}
+        >
           MovieNest
         </Link>
 
@@ -59,7 +63,14 @@ function Navbar() {
         <NavLink to="/watchlist" className={linkClass} onClick={closeMenu}>
           Watchlist{' '}
           {count > 0 && (
-            <span className="animate-[pop_0.35s_cubic-bezier(0.34,1.56,0.64,1)] rounded-full bg-brand px-2 py-0.5 text-xs font-bold text-white">
+            // Keyed on `count` so the pop animation actually replays every
+            // time the count changes, not just the first time the badge
+            // mounts (a static className never restarts a CSS animation on
+            // an element that's already in the DOM).
+            <span
+              key={count}
+              className="animate-[pop_0.35s_cubic-bezier(0.34,1.56,0.64,1)] rounded-full bg-brand px-2 py-0.5 text-xs font-bold text-white"
+            >
               {count}
             </span>
           )}

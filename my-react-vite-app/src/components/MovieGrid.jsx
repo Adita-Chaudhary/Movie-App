@@ -4,6 +4,7 @@ import { SkeletonRow } from './SkeletonCard';
 import ErrorState from './ErrorState';
 import EmptyState from './EmptyState';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { useExitingItems } from '../hooks/useExitingItems';
 
 /**
  * auto-fill (not auto-fit) is deliberate: auto-fit collapses empty
@@ -38,10 +39,22 @@ function MovieGrid({
   hasMore = false,
   onLoadMore,
   isLoadingMore = false,
+  // Opt-in: when a movie disappears from `movies` (e.g. removed from the
+  // watchlist), keep its card mounted just long enough to play a
+  // fade-out/shrink exit instead of vanishing instantly. Off by default
+  // so grids that never remove individual items (Search results, etc.)
+  // are completely unaffected.
+  animateRemovals = false,
 }) {
   const [sentinelRef, isSentinelVisible] = useIntersectionObserver({
     enabled: hasMore && !isLoading && !isError,
   });
+  const displayMovies = useExitingItems(movies, (movie) => movie.id);
+  // While the last remaining card is still playing its exit animation,
+  // `movies` is already empty but `displayMovies` isn't yet - checking
+  // `movies.length` here would swap straight to the empty state mid-exit,
+  // cutting the animation off instead of letting it finish.
+  const visibleCount = animateRemovals ? displayMovies.length : movies.length;
 
   useEffect(() => {
     if (isSentinelVisible && hasMore && !isLoadingMore) {
@@ -57,16 +70,20 @@ function MovieGrid({
     return <SkeletonRow count={12} />;
   }
 
-  if (!isLoading && movies.length === 0) {
+  if (!isLoading && visibleCount === 0) {
     return emptyState ?? <EmptyState title="No movies found" message="Try a different search or filter." />;
   }
 
   return (
     <>
       <div className={MOVIE_GRID_CLASS}>
-        {movies.map((movie) => (
-          <MovieCard movie={movie} key={movie.id} />
-        ))}
+        {animateRemovals
+          ? displayMovies.map(({ item: movie, isExiting }) => (
+              <div key={movie.id} className={isExiting ? 'exiting' : undefined} aria-hidden={isExiting || undefined}>
+                <MovieCard movie={movie} />
+              </div>
+            ))
+          : movies.map((movie) => <MovieCard movie={movie} key={movie.id} />)}
       </div>
       {hasMore && (
         <div

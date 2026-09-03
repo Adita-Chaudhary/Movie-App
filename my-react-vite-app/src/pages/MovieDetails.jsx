@@ -10,6 +10,7 @@ import RatingReviewForm from '../components/RatingReviewForm';
 import WhereToWatch from '../components/WhereToWatch';
 import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
+import Reveal from '../components/Reveal';
 import { tmdbImage } from '../services/tmdbClient';
 import { toMovieSummary } from '../utils/movieSummary';
 import { rankSimilarMovies } from '../utils/recommendations';
@@ -52,17 +53,24 @@ function MovieDetails() {
 
   return (
     <div className="relative pb-8">
-      <div
-        className="absolute inset-x-0 top-0 -z-10 h-[260px] bg-cover bg-top [animation:fadeIn_0.6s_ease_both] sm:h-[420px]"
-        style={backdropUrl ? { backgroundImage: `url(${backdropUrl})` } : undefined}
-      >
+      <div className="absolute inset-x-0 top-0 -z-10 h-[260px] overflow-hidden [animation:fadeIn_0.6s_ease_both] sm:h-[420px]">
+        {backdropUrl && (
+          <div
+            className="backdrop-ken-burns h-full w-full bg-cover bg-top"
+            style={{ backgroundImage: `url(${backdropUrl})` }}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-canvas" />
       </div>
 
       <div className="mx-auto flex max-w-[1200px] flex-col gap-6 px-5 pb-4 pt-8 sm:gap-8 md:flex-row md:px-8 md:pt-12">
         <div className="flex-none [animation:scaleIn_0.5s_cubic-bezier(0.22,1,0.36,1)_both] md:w-[260px]">
           {posterUrl ? (
-            <img src={posterUrl} alt={movie.title} className="block w-40 rounded-[10px] shadow-panel sm:w-56 md:w-full" />
+            <img
+              src={posterUrl}
+              alt={movie.title}
+              className="block w-40 rounded-[10px] shadow-panel transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_16px_28px_rgba(0,0,0,0.35)] sm:w-56 md:w-full"
+            />
           ) : (
             <div
               className="flex aspect-[2/3] w-40 items-center justify-center rounded-[10px] bg-panel-raised text-5xl sm:w-56 md:w-full"
@@ -115,7 +123,10 @@ function MovieDetails() {
           {director && (
             <p className="mb-4">
               <strong>Director:</strong>{' '}
-              <Link to={`/person/${director.id}`} className="font-semibold text-brand hover:text-brand-hover">
+              <Link
+                to={`/person/${director.id}`}
+                className="font-semibold text-brand transition-colors duration-150 hover:text-brand-hover"
+              >
                 {director.name}
               </Link>
             </p>
@@ -136,7 +147,7 @@ function MovieDetails() {
       <WhereToWatch movieId={movie.id} />
 
       {cast.length > 0 && (
-        <section className="mx-auto mb-8 max-w-[1200px] px-5 md:px-8">
+        <Reveal as="section" className="mx-auto mb-8 max-w-[1200px] px-5 md:px-8">
           <h2 className="mb-4 text-xl font-bold">Cast</h2>
           <div className="stagger flex gap-4 overflow-x-auto pb-2 [scroll-behavior:smooth]">
             {cast.map((person) => (
@@ -165,10 +176,10 @@ function MovieDetails() {
               </Link>
             ))}
           </div>
-        </section>
+        </Reveal>
       )}
 
-      <section className="mx-auto mb-8 max-w-[1200px] px-5 md:px-8">
+      <Reveal as="section" className="mx-auto mb-8 max-w-[1200px] px-5 md:px-8">
         <h2 className="mb-4 text-xl font-bold">Your Rating</h2>
         {existingRating && (
           <div className="mb-3 flex items-center gap-3 text-sm text-ink-muted">
@@ -181,10 +192,10 @@ function MovieDetails() {
           onSave={(payload) => rateMovie(toMovieSummary(movie), payload)}
           onDelete={() => deleteRating(movie.id)}
         />
-      </section>
+      </Reveal>
 
       {similarMovies.length > 0 && (
-        <div className="mx-auto max-w-[1200px] px-5 md:px-8">
+        <Reveal className="mx-auto max-w-[1200px] px-5 md:px-8">
           <MovieRow
             title="Similar Movies"
             subtitle="Based on this movie's genres, themes and TMDB's own similarity data"
@@ -192,7 +203,7 @@ function MovieDetails() {
             isLoading={false}
             isError={false}
           />
-        </div>
+        </Reveal>
       )}
     </div>
   );

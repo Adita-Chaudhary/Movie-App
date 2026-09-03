@@ -4,6 +4,7 @@ import { useAvailableRegions } from '../hooks/useAvailableRegions';
 import { useRegion } from '../hooks/useRegion';
 import { withCurrentRegionOption } from '../utils/region';
 import { tmdbImage } from '../services/tmdbClient';
+import { getProviderUrl } from '../utils/watchProviders';
 import Spinner from './Spinner';
 import EmptyState from './EmptyState';
 
@@ -46,7 +47,7 @@ function WhereToWatch({ movieId }) {
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
-              className="max-w-[200px] rounded-md px-2.5 py-1.5 text-sm"
+              className="max-w-[200px] rounded-md px-2.5 py-1.5 text-sm transition-shadow duration-200 focus:ring-4 focus:ring-brand/15"
               aria-label="Select region for watch availability"
             >
               {regionOptions.map((r) => (
@@ -73,22 +74,54 @@ function WhereToWatch({ movieId }) {
                 return (
                   <div className="mb-4 last:mb-0" key={key}>
                     <h3 className="mb-2.5 text-xs uppercase tracking-wide text-ink-muted">{label}</h3>
-                    <div className="flex flex-wrap gap-2.5">
+                    <div className="flex flex-wrap gap-3">
                       {providers.map((provider) => {
                         const logoUrl = tmdbImage(provider.logo_path, 'w92');
+                        const providerUrl = getProviderUrl(provider);
+
+                        const logo = logoUrl ? (
+                          <img
+                            src={logoUrl}
+                            alt={provider.provider_name}
+                            loading="lazy"
+                            className="block h-full w-full object-cover transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110"
+                          />
+                        ) : (
+                          <span className="p-1 text-center text-[0.55rem] leading-tight text-ink-muted">
+                            {provider.provider_name}
+                          </span>
+                        );
+
+                        // Only ever rendered as a link when TMDB actually
+                        // supplied a URL for this specific provider (see
+                        // utils/watchProviders.js) - never a fabricated
+                        // one built from the provider's name/id.
+                        if (providerUrl) {
+                          return (
+                            <a
+                              key={provider.provider_id}
+                              href={providerUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={`Open ${provider.provider_name}`}
+                              aria-label={`Open ${provider.provider_name} (opens in a new tab)`}
+                              className="group relative flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-panel-raised ring-1 ring-line transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.06] hover:shadow-panel hover:ring-brand focus-visible:-translate-y-1 focus-visible:scale-[1.06] focus-visible:ring-brand active:translate-y-0 active:scale-[0.96]"
+                            >
+                              {logo}
+                              <span className="pointer-events-none absolute bottom-0.5 right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-black/70 text-[0.5rem] leading-none text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">
+                                ↗
+                              </span>
+                            </a>
+                          );
+                        }
+
                         return (
                           <div
-                            className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-panel-raised transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.06]"
                             key={provider.provider_id}
                             title={provider.provider_name}
+                            className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-panel-raised opacity-90"
                           >
-                            {logoUrl ? (
-                              <img src={logoUrl} alt={provider.provider_name} loading="lazy" className="block h-full w-full object-cover" />
-                            ) : (
-                              <span className="p-1 text-center text-[0.55rem] leading-tight text-ink-muted">
-                                {provider.provider_name}
-                              </span>
-                            )}
+                            {logo}
                           </div>
                         );
                       })}
@@ -104,22 +137,8 @@ function WhereToWatch({ movieId }) {
               message="Availability varies by region - try switching the region above."
             />
           )}
-
-          {regionData?.link && (
-            <a
-              href={regionData.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-block text-sm font-semibold text-brand transition-colors hover:text-brand-hover"
-            >
-              View Watch Options on TMDB ↗
-            </a>
-          )}
         </>
       )}
-
-      {/* Required attribution for TMDB/JustWatch watch-provider data. */}
-      <p className="mt-5 text-xs text-ink-muted opacity-75">Watch provider data provided by JustWatch.</p>
     </section>
   );
 }

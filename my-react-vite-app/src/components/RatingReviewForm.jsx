@@ -22,7 +22,7 @@ function RatingReviewForm({ existing, onSave, onDelete }) {
         <StarRating value={rating} onChange={setRating} size="lg" />
       </div>
       <textarea
-        className="w-full resize-y rounded-md p-3 text-sm"
+        className="w-full resize-y rounded-md p-3 text-sm transition-shadow duration-200 focus:ring-4 focus:ring-brand/15"
         placeholder="Write a short review (optional)"
         value={review}
         onChange={(e) => setReview(e.target.value)}

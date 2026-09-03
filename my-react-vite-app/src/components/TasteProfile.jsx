@@ -34,13 +34,13 @@ function TasteProfile() {
         Calculated from {profile.moviesConsidered} movies in your watchlist, ratings and viewing history.
       </p>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-5 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
+      <div className="stagger grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-5 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
         {topGenreNames.length > 0 && (
-          <div>
+          <div className="fade-in-up">
             <h3 className="mb-2 text-xs uppercase tracking-wide text-ink-muted">Top Genres</h3>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="stagger flex flex-wrap gap-1.5">
               {topGenreNames.map((name) => (
-                <span key={name} className="rounded-full bg-panel-raised px-2.5 py-1 text-sm">
+                <span key={name} className="fade-in-sm rounded-full bg-panel-raised px-2.5 py-1 text-sm">
                   {name}
                 </span>
               ))}
@@ -49,18 +49,18 @@ function TasteProfile() {
         )}
 
         {profile.averageRating !== null && (
-          <div>
+          <div className="fade-in-up">
             <h3 className="mb-2 text-xs uppercase tracking-wide text-ink-muted">Your Average Rating</h3>
             <p className="text-[1.05rem] font-semibold">★ {profile.averageRating.toFixed(1)} / 5</p>
           </div>
         )}
 
         {profile.topKeywordNames.length > 0 && (
-          <div>
+          <div className="fade-in-up">
             <h3 className="mb-2 text-xs uppercase tracking-wide text-ink-muted">Recurring Themes</h3>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="stagger flex flex-wrap gap-1.5">
               {profile.topKeywordNames.map((name) => (
-                <span key={name} className="rounded-full bg-panel-raised px-2.5 py-1 text-sm">
+                <span key={name} className="fade-in-sm rounded-full bg-panel-raised px-2.5 py-1 text-sm">
                   {name}
                 </span>
               ))}
@@ -69,7 +69,7 @@ function TasteProfile() {
         )}
 
         {profile.topDirector && (
-          <div>
+          <div className="fade-in-up">
             <h3 className="mb-2 text-xs uppercase tracking-wide text-ink-muted">Favorite Director</h3>
             <p className="text-[1.05rem] font-semibold">
               {profile.topDirector.name}{' '}
@@ -79,7 +79,7 @@ function TasteProfile() {
         )}
 
         {profile.topCast.length > 0 && (
-          <div>
+          <div className="fade-in-up">
             <h3 className="mb-2 text-xs uppercase tracking-wide text-ink-muted">Familiar Faces</h3>
             <p className="text-[1.05rem] font-semibold">{profile.topCast.map((c) => c.name).join(', ')}</p>
           </div>

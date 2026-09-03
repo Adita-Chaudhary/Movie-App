@@ -7,6 +7,7 @@
   justify-content: center;
   z-index: 100;
   padding: 1rem;
+  animation: fadeIn 0.2s ease both;
 }
 
 .confirm-dialog {
@@ -16,6 +17,7 @@
   max-width: 400px;
   width: 100%;
   box-shadow: var(--shadow-card);
+  animation: scaleIn 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .confirm-dialog h3 {

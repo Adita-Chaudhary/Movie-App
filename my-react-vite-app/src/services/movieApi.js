@@ -57,11 +57,48 @@ export const discoverMovies = ({
 
 /**
  * Movie detail page data in a single request: base details plus credits,
- * similar titles and keywords via TMDB's append_to_response, instead of
- * three separate round trips.
+ * similar titles, TMDB's own recommendations, and keywords via TMDB's
+ * append_to_response, instead of four separate round trips. `similar`
+ * and `recommendations` are two distinct TMDB algorithms (see
+ * utils/recommendations/similarMovies.js for how MovieNest combines and
+ * re-ranks them) - both come along for free on this one request.
  */
 export const getMovieDetails = (id, { signal } = {}) =>
   tmdbFetch(`/movie/${id}`, {
-    params: { append_to_response: 'credits,similar,keywords' },
+    params: { append_to_response: 'credits,similar,recommendations,keywords' },
     signal,
   });
+
+/**
+ * Person (actor/director/crew) details in a single request: bio, photo,
+ * and their full movie filmography (cast + crew credits) via
+ * append_to_response, instead of two round trips. Used by the /person/:id
+ * page reached from Movie Details' cast cards and director credit.
+ */
+export const getPersonDetails = (id, { signal } = {}) =>
+  tmdbFetch(`/person/${id}`, {
+    params: { append_to_response: 'movie_credits' },
+    signal,
+  });
+
+/**
+ * "Where to watch" data for a movie (stream/free/ads/rent/buy providers,
+ * sourced from JustWatch via TMDB). TMDB returns EVERY region's data in
+ * one response keyed by ISO country code (`results.US`, `results.GB`,
+ * ...) - so switching the region selector in WhereToWatch.jsx never
+ * issues another request, it just reads a different key from the same
+ * cached response. A 6-hour TTL is used since availability shifts day to
+ * day but not minute to minute.
+ */
+export const getWatchProviders = (movieId, { signal } = {}) =>
+  tmdbFetch(`/movie/${movieId}/watch/providers`, { signal, ttlMs: 6 * 60 * 60 * 1000 });
+
+/**
+ * The list of regions TMDB has watch-provider data for - used to
+ * populate the region selector instead of a hardcoded country list.
+ * Barely ever changes, so it's cached for a full day and, being cached
+ * by URL like everything else in tmdbClient, is only ever fetched once
+ * across the whole app regardless of how many movies the user views.
+ */
+export const getAvailableRegions = ({ signal } = {}) =>
+  tmdbFetch('/watch/providers/regions', { signal, ttlMs: 24 * 60 * 60 * 1000 });

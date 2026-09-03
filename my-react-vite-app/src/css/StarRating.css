@@ -20,17 +20,25 @@
   line-height: 1;
   color: var(--color-border);
   cursor: pointer;
-  transition: transform 0.1s, color 0.15s;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.15s ease;
 }
 
 .star-btn:hover,
 .star-btn:focus-visible {
-  transform: scale(1.15);
+  transform: scale(1.25) rotate(-4deg);
   outline-offset: 1px;
+}
+
+.star-btn:active {
+  transform: scale(0.95);
 }
 
 .star-btn.star--filled {
   color: var(--color-star);
+}
+
+.star--filled {
+  transition: color 0.15s ease;
 }
 
 .star-rating--sm .star-btn,

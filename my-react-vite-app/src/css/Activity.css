@@ -21,6 +21,7 @@
   font-weight: 600;
   color: var(--color-text-muted);
   border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .activity-tab.active {
@@ -56,6 +57,12 @@
   background-color: var(--color-surface);
   border-radius: 10px;
   padding: 1rem;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rating-list-item:hover {
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-card);
 }
 
 .rating-list-poster {

@@ -1,6 +1,13 @@
 .movies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  /* auto-fill (not auto-fit) is deliberate: auto-fit collapses empty
+     tracks and stretches the remaining ones to fill the row, so a grid
+     with a single card would blow that card up to the full container
+     width (a real bug we hit in Watchlist). auto-fill keeps as many
+     160px+ tracks reserved as fit the container regardless of item
+     count, so cards stay a consistent, compact size whether there are
+     0, 1, 2, or many. */
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1.5rem;
   padding: 0.25rem;
   width: 100%;

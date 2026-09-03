@@ -1,29 +1,47 @@
 /**
  * Content-based movie recommendation engine.
  *
- * WHAT THIS IS: a hand-written, fully explainable scoring function - not
- * machine learning. There is no training data, no model weights learned
- * from data, and no gradient descent. It is "content-based filtering" in
- * the classic recommender-systems sense: recommendations are derived from
- * the *content* of movies the user already likes (genres + overview text),
- * compared against the content of candidate movies, using hand-picked
- * weights (see scoreCandidates.js). This makes every recommendation
- * traceable back to a concrete reason, which is what `matchedGenreIds`
- * is for.
+ * WHAT THIS IS: hand-written, fully explainable scoring - not machine
+ * learning. There is no training data, no model weights learned from
+ * data, and no gradient descent. It is "content-based filtering" in the
+ * classic recommender-systems sense: recommendations are derived from
+ * the *content* of movies the user already likes (genres, keywords,
+ * overview text, cast, director), compared against the same content on
+ * candidate movies, using hand-picked, documented weights (see
+ * scoreCandidates.js). Every recommendation is traceable back to the
+ * exact signals that produced it (see explain.js) - nothing is inferred
+ * beyond what the scoring actually found.
  *
- * Pipeline:
- * 1. buildUserProfile()  - turn the user's liked/rated/viewed movies into
- *    a taste profile: a genre-weight map + a combined overview term
- *    vector (see textSimilarity.js for the TF/cosine math).
- * 2. rankCandidates()    - score every candidate movie against that
- *    profile (genre overlap + overview similarity + a small
- *    popularity/quality tie-breaker) and return the top N.
+ * Pipeline (see useRecommendations.js for the full orchestration):
+ * 1. buildUserProfile()     - turn the user's watchlist/highly-rated/
+ *    recently-viewed movies into a taste profile: weighted genre,
+ *    keyword, cast, and director maps, plus a combined overview term
+ *    vector (textSimilarity.js).
+ * 2. rankCandidates()       - cheap first-pass score (genre + overview
+ *    text + quality - the only signals available on list-endpoint
+ *    candidates) to shortlist the most promising movies.
+ * 3. enrichTopCandidates()  - fetch full details (keywords/cast/
+ *    director) for just that shortlist, via the same cached
+ *    getMovieDetails() the Movie Details page uses - bounded, not
+ *    "every candidate", to avoid unnecessary API calls.
+ * 4. rankCandidates() again - full six-signal score on the enriched
+ *    shortlist, producing the final ranked list.
+ * 5. explainRecommendation() - turn each result's matched signals into a
+ *    short, honest, human-readable reason.
  *
- * See useRecommendations.js for how signals are weighted (watchlist vs.
- * a 5-star rating vs. something merely viewed) and where the candidate
- * pool comes from.
+ * Related, separate systems built on the same primitives:
+ * - similarMovies.js   - "similar to the movie being viewed" (Movie
+ *   Details page), NOT personalized to the user.
+ * - movieNight.js       - picks a complementary two-movie pairing from an
+ *   already-ranked recommendation list, with no extra scoring/API cost.
+ * - tasteProfile.js (../tasteProfile.js) - a human-readable rendering of
+ *   the same profile-building primitives, for the "Movie DNA" section.
  */
 
-export { buildUserProfile } from './buildProfile';
-export { rankCandidates, scoreMovie } from './scoreCandidates';
+export { buildUserProfile, dominantSourceType } from './buildProfile';
+export { rankCandidates, scoreMovie, WEIGHTS } from './scoreCandidates';
 export { cosineSimilarity, termFrequencyVector, tokenize } from './textSimilarity';
+export { explainRecommendation } from './explain';
+export { rankSimilarMovies } from './similarMovies';
+export { enrichTopCandidates } from './enrichCandidates';
+export { pickDoubleFeature } from './movieNight';

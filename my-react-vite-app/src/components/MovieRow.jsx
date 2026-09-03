@@ -39,7 +39,7 @@ function MovieRow({ title, subtitle, movies, isLoading, isError, errorMessage, e
         <h2 className="movie-row-title">{title}</h2>
         {subtitle && <p className="movie-row-subtitle">{subtitle}</p>}
       </div>
-      <div className="movie-row-scroller">
+      <div className="movie-row-scroller stagger">
         {movies.map((movie) => (
           <div className="movie-row-item" key={movie.id}>
             <MovieCard movie={movie} />

@@ -45,7 +45,7 @@ function MovieGrid({
 
   return (
     <>
-      <div className="movies-grid">
+      <div className="movies-grid stagger">
         {movies.map((movie) => (
           <MovieCard movie={movie} key={movie.id} />
         ))}

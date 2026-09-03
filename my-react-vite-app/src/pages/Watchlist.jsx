@@ -27,7 +27,7 @@ function Watchlist() {
   return (
     <div className="watchlist-page">
       <h2>Your Watchlist ({count})</h2>
-      <div className="movies-grid">
+      <div className="movies-grid stagger">
         {watchlist.map((movie) => (
           <MovieCard movie={movie} key={movie.id} />
         ))}

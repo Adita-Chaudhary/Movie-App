@@ -38,4 +38,14 @@ export default [
       ],
     },
   },
+  {
+    // Test files run under Vitest's Node process (even though they also
+    // exercise jsdom/browser APIs), so they legitimately reference Node
+    // globals like `process` - e.g. resolving a fixture path relative to
+    // the working directory.
+    files: ['**/*.test.{js,jsx}'],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+    },
+  },
 ]

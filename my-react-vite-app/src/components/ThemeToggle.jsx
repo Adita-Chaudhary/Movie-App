@@ -12,7 +12,9 @@ function ThemeToggle() {
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {isDark ? '☀️' : '🌙'}
+      <span key={theme} className="theme-toggle-icon">
+        {isDark ? '☀️' : '🌙'}
+      </span>
     </button>
   );
 }

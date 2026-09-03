@@ -6,6 +6,7 @@ import MovieCard from '../components/MovieCard';
 import EmptyState from '../components/EmptyState';
 import ConfirmDialog from '../components/ConfirmDialog';
 import StarRating from '../components/StarRating';
+import TasteProfile from '../components/TasteProfile';
 import { tmdbImage } from '../services/tmdbClient';
 import { formatDate, formatYear, truncate } from '../utils/format';
 import '../css/Activity.css';
@@ -37,7 +38,7 @@ function HistoryTab() {
           Clear History
         </button>
       </div>
-      <div className="movies-grid">
+      <div className="movies-grid stagger">
         {history.map((movie) => (
           <MovieCard movie={movie} key={movie.id} />
         ))}
@@ -78,11 +79,11 @@ function RatingsTab() {
   }
 
   return (
-    <div className="ratings-list">
+    <div className="ratings-list stagger">
       {ratingsList.map((entry) => {
         const posterUrl = tmdbImage(entry.movie.poster_path, 'w185');
         return (
-          <div className="rating-list-item" key={entry.movieId}>
+          <div className="rating-list-item fade-in-up" key={entry.movieId}>
             <Link to={`/movie/${entry.movieId}`} className="rating-list-poster">
               {posterUrl ? (
                 <img src={posterUrl} alt={entry.movie.title} loading="lazy" />
@@ -131,6 +132,8 @@ function Activity() {
 
   return (
     <div className="activity-page">
+      <TasteProfile />
+
       <div className="activity-tabs" role="tablist">
         <button
           type="button"

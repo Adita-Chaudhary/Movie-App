@@ -1,0 +1,124 @@
+/**
+ * Shared motion primitives, imported once globally (see main.jsx) so any
+ * component can opt in with a plain className - no per-component CSS
+ * duplication. Every keyframe here animates only `transform`/`opacity`
+ * (cheap, GPU-composited, never triggers layout) and is neutralized by
+ * the prefers-reduced-motion override in index.css.
+ *
+ * Stagger mechanism: `.stagger` marks a row/grid container; its direct
+ * children get an increasing `--stagger-delay` custom property via
+ * nth-child. `.fade-in-up` (and friends) read that variable for their
+ * `animation-delay`, and custom properties inherit through the DOM even
+ * when the animated element is nested a level deeper than the direct
+ * child (e.g. MovieCard's link inside MovieRow's sizing wrapper) - so
+ * one mechanism works for both flat grids and nested row items without
+ * duplicating selectors per context.
+ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes iconSwap {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-45deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease both;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+.scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+/* Capped at ~10 explicit steps, then one shared delay for the rest - a
+   big grid shouldn't turn into a multi-second cascade, and later
+   infinite-scroll batches simply join the "no extra delay" group. */
+.stagger > *:nth-child(1) {
+  --stagger-delay: 0ms;
+}
+.stagger > *:nth-child(2) {
+  --stagger-delay: 40ms;
+}
+.stagger > *:nth-child(3) {
+  --stagger-delay: 80ms;
+}
+.stagger > *:nth-child(4) {
+  --stagger-delay: 120ms;
+}
+.stagger > *:nth-child(5) {
+  --stagger-delay: 160ms;
+}
+.stagger > *:nth-child(6) {
+  --stagger-delay: 200ms;
+}
+.stagger > *:nth-child(7) {
+  --stagger-delay: 240ms;
+}
+.stagger > *:nth-child(8) {
+  --stagger-delay: 280ms;
+}
+.stagger > *:nth-child(9) {
+  --stagger-delay: 320ms;
+}
+.stagger > *:nth-child(n + 10) {
+  --stagger-delay: 360ms;
+}
+
+/** Page-level transition wrapper - see App.jsx (remounted per route via a pathname key). */
+.page-transition {
+  animation: fadeIn 0.3s ease both;
+}

@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMovieDetails } from '../hooks/useMovieDetails';
 import { useWatchlist } from '../contexts/WatchlistContext';
 import { useHistory } from '../contexts/HistoryContext';
@@ -7,26 +7,14 @@ import { useRatings } from '../contexts/RatingsContext';
 import MovieRow from '../components/MovieRow';
 import StarRating from '../components/StarRating';
 import RatingReviewForm from '../components/RatingReviewForm';
+import WhereToWatch from '../components/WhereToWatch';
 import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
 import { tmdbImage } from '../services/tmdbClient';
+import { toMovieSummary } from '../utils/movieSummary';
+import { rankSimilarMovies } from '../utils/recommendations';
 import { formatDate, formatRuntime, formatRating } from '../utils/format';
 import '../css/MovieDetails.css';
-
-/** Reduces a full TMDB detail object to the light shape used by watchlist/history/ratings snapshots. */
-function toMovieSummary(details) {
-  return {
-    id: details.id,
-    title: details.title,
-    poster_path: details.poster_path,
-    backdrop_path: details.backdrop_path,
-    release_date: details.release_date,
-    overview: details.overview,
-    vote_average: details.vote_average,
-    popularity: details.popularity,
-    genre_ids: details.genres?.map((g) => g.id) ?? [],
-  };
-}
 
 function MovieDetails() {
   const { id } = useParams();
@@ -41,13 +29,22 @@ function MovieDetails() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [movie?.id]);
 
+  // Combine + re-rank TMDB's `similar` and `recommendations` lists using
+  // MovieNest's own content-similarity scoring, instead of showing
+  // either raw list (see utils/recommendations/similarMovies.js).
+  const similarMovies = useMemo(() => {
+    if (!movie) return [];
+    return rankSimilarMovies(movie, movie.similar?.results, movie.recommendations?.results, { limit: 12 }).map(
+      (result) => result.movie
+    );
+  }, [movie]);
+
   if (isLoading) return <Spinner label="Loading movie details" />;
   if (isError) return <ErrorState message={error} onRetry={() => navigate(0)} />;
   if (!movie) return null;
 
   const director = movie.credits?.crew?.find((person) => person.job === 'Director');
   const cast = movie.credits?.cast?.slice(0, 8) ?? [];
-  const similarMovies = movie.similar?.results?.slice(0, 12) ?? [];
   const keywords = movie.keywords?.keywords?.slice(0, 8) ?? [];
   const inWatchlist = isInWatchlist(movie.id);
   const existingRating = getRating(movie.id);
@@ -108,7 +105,7 @@ function MovieDetails() {
 
           {director && (
             <p className="movie-details-director">
-              <strong>Director:</strong> {director.name}
+              <strong>Director:</strong> <Link to={`/person/${director.id}`}>{director.name}</Link>
             </p>
           )}
 
@@ -124,12 +121,14 @@ function MovieDetails() {
         </div>
       </div>
 
+      <WhereToWatch movieId={movie.id} />
+
       {cast.length > 0 && (
         <section className="cast-section">
           <h2>Cast</h2>
-          <div className="cast-scroller">
+          <div className="cast-scroller stagger">
             {cast.map((person) => (
-              <div key={person.cast_id ?? person.id} className="cast-card">
+              <Link key={person.cast_id ?? person.id} to={`/person/${person.id}`} className="cast-card fade-in">
                 {tmdbImage(person.profile_path, 'w185') ? (
                   <img src={tmdbImage(person.profile_path, 'w185')} alt={person.name} loading="lazy" />
                 ) : (
@@ -139,7 +138,7 @@ function MovieDetails() {
                 )}
                 <p className="cast-name">{person.name}</p>
                 <p className="cast-character">{person.character}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -160,7 +159,15 @@ function MovieDetails() {
         />
       </section>
 
-      {similarMovies.length > 0 && <MovieRow title="Similar Movies" movies={similarMovies} isLoading={false} isError={false} />}
+      {similarMovies.length > 0 && (
+        <MovieRow
+          title="Similar Movies"
+          subtitle="Based on this movie's genres, themes and TMDB's own similarity data"
+          movies={similarMovies}
+          isLoading={false}
+          isError={false}
+        />
+      )}
     </div>
   );
 }

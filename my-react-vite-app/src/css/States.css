@@ -5,6 +5,7 @@
   border-radius: 12px;
   margin: 1rem auto;
   max-width: 600px;
+  animation: fadeInUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .state-icon {

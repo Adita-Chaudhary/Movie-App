@@ -16,7 +16,7 @@ function MovieCard({ movie }) {
   }
 
   return (
-    <Link to={`/movie/${movie.id}`} className="movie-card-link">
+    <Link to={`/movie/${movie.id}`} className="movie-card-link fade-in-up">
       <div className="movie-card">
         <div className="movie-poster">
           {posterUrl ? (

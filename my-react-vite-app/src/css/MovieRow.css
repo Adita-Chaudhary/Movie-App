@@ -29,6 +29,7 @@
   overflow-x: auto;
   padding-bottom: 0.75rem;
   scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
   scrollbar-width: thin;
 }
 

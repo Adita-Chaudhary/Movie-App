@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import MovieRow from '../components/MovieRow';
+import RecommendationRow from '../components/RecommendationRow';
+import MovieNight from '../components/MovieNight';
 import { useMovieList } from '../hooks/useMovieList';
 import { useRecommendations } from '../hooks/useRecommendations';
 import { useWatchlist } from '../contexts/WatchlistContext';
@@ -21,8 +23,10 @@ function Home() {
   const { watchlist } = useWatchlist();
   const { history } = useHistory();
 
-  // Recommendations are scored against movies we've already fetched for
-  // the other rows - no extra network requests (see useRecommendations.js).
+  // Recommendations' cheap first pass is scored against movies we've
+  // already fetched for the other rows - no extra network requests for
+  // that stage (see useRecommendations.js for the bounded second-pass
+  // enrichment that follows it).
   const candidatePool = useMemo(() => {
     const combined = [...trending.movies, ...popular.movies, ...topRated.movies, ...upcoming.movies];
     const seen = new Set();
@@ -33,7 +37,7 @@ function Home() {
     });
   }, [trending.movies, popular.movies, topRated.movies, upcoming.movies]);
 
-  const { recommendations, hasEnoughSignal } = useRecommendations(candidatePool);
+  const { recommendations, isPersonalized, isLoading: isRecommendationsLoading } = useRecommendations(candidatePool);
 
   return (
     <div className="home">
@@ -42,15 +46,13 @@ function Home() {
         <p>Trending picks, personal ratings, and recommendations based on what you actually watch.</p>
       </div>
 
-      {hasEnoughSignal && recommendations.length > 0 && (
-        <MovieRow
-          title="Recommended for You"
-          subtitle="Based on your watchlist, ratings and viewing history"
-          movies={recommendations.map((r) => r.movie)}
-          isLoading={false}
-          isError={false}
-        />
-      )}
+      <RecommendationRow
+        recommendations={recommendations}
+        isLoading={isRecommendationsLoading}
+        isPersonalized={isPersonalized}
+      />
+
+      <MovieNight recommendations={recommendations} isPersonalized={isPersonalized} />
 
       {watchlist.length > 0 && (
         <MovieRow title="From Your Watchlist" movies={watchlist.slice(0, 12)} isLoading={false} isError={false} />
